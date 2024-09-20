@@ -80,11 +80,6 @@ static bool unlock_global_acpi_lock(void)
 #define AYANEO_LED_MC_ADDR_CLOSE_1    0x86
 #define AYANEO_LED_MC_ADDR_CLOSE_2    0xc6
 
-#define AYANEO_LED_MC_ENABLE_ADDR     0xb2
-#define AYANEO_LED_MC_ENABLE_ON       0xb1
-#define AYANEO_LED_MC_ENABLE_OFF      0x31
-#define AYANEO_LED_MC_ENABLE_RESET    0xc0
-
 #define AYANEO_LED_MC_MODE_ADDR       0x87
 #define AYANEO_LED_MC_MODE_HOLD       0xa5
 #define AYANEO_LED_MC_MODE_RELEASE    0x00
@@ -121,29 +116,45 @@ static bool unlock_global_acpi_lock(void)
 */
 
 /* EC Controlled RGB registers */
-#define AYANEO_LED_PWM_CONTROL      0x6d
-#define AYANEO_LED_POS              0xb1
-#define AYANEO_LED_BRIGHTNESS       0xb2
-#define AYANEO_LED_MODE_REG         0xbf
+#define AYANEO_LED_PWM_CONTROL        0x6d
+#define AYANEO_LED_POS                0xb1
+#define AYANEO_LED_BRIGHTNESS         0xb2
+#define AYANEO_LED_MODE_REG           0xbf
 
-#define AYANEO_LED_CMD_ENABLE_ADDR  0x02
-#define AYANEO_LED_CMD_ENABLE_ON    0xb1
-#define AYANEO_LED_CMD_ENABLE_OFF   0x31
-#define AYANEO_LED_CMD_ENABLE_RESET 0xc0
+#define AYANEO_LED_CMD_ENABLE_ADDR    0x02
+#define AYANEO_LED_CMD_ENABLE_ON      0xb1
+#define AYANEO_LED_CMD_ENABLE_OFF     0x31
+#define AYANEO_LED_CMD_ENABLE_RESET   0xc0
+
+#define AYANEO_LED_CMD_PATTERN_ADDR   0x0f
+#define AYANEO_LED_CMD_PATTERN_OFF    0x00
+
+#define AYANEO_LED_CMD_FADE_ADDR      0x10
+#define AYANEO_LED_CMD_FADE_OFF       0x00
+
+#define AYANEO_LED_CMD_WATCHDOG_ADDR  0x15
+#define AYANEO_LED_CMD_WATCHDOG_ON    0x07
+
+#define AYANEO_LED_CMD_ANIM_1_ADDR    0x11 /* Animation step 1 */
+#define AYANEO_LED_CMD_ANIM_2_ADDR    0x12 /* Animation step 2 */
+#define AYANEO_LED_CMD_ANIM_3_ADDR    0x13 /* Animation step 3 */
+#define AYANEO_LED_CMD_ANIM_4_ADDR    0x14 /* Animation step 4 */
+#define AYANEO_LED_CMD_ANIM_STATIC    0x05
 
 /* RGB Mode values */
-#define AYANEO_LED_MODE_RELEASE     0x00 /* close channel, release control */
-#define AYANEO_LED_MODE_WRITE       0x10 /* Default write mode */
-#define AYANEO_LED_MODE_HOLD        0xfe /* close channel, hold control */
+#define AYANEO_LED_MODE_RELEASE       0x00 /* close channel, release control */
+#define AYANEO_LED_MODE_WRITE         0x10 /* Default write mode */
+#define AYANEO_LED_MODE_HOLD          0xfe /* close channel, hold control */
 
-#define AYANEO_LED_GROUP_LEFT       0x01
-#define AYANEO_LED_GROUP_RIGHT      0x02
-#define AYANEO_LED_GROUP_LEFT_RIGHT 0x03
-#define AYANEO_LED_GROUP_BUTTON     0x04
+#define AYANEO_LED_GROUP_LEFT         0x01
+#define AYANEO_LED_GROUP_RIGHT        0x02
+#define AYANEO_LED_GROUP_LEFT_RIGHT   0x03
+#define AYANEO_LED_GROUP_BUTTON       0x04
 
 #define AYANEO_LED_WRITE_DELAY_LEGACY_MS        2
 #define AYANEO_LED_WRITE_DELAY_MS               1
 #define AYANEO_LED_WRITER_DELAY_RANGE_US        10000, 20000
+#define AYANEO_LED_SUSPEND_RESUME_DELAY_MS      100
 
 enum ayaneo_model {
         air = 1,
@@ -357,25 +368,6 @@ static void ayaneo_led_mc_hold(void)
         ec_write_ram(AYANEO_LED_MC_MODE_ADDR, AYANEO_LED_MC_MODE_HOLD);
 
         ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
-
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x02, 0xba);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x02, 0xba);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x0f, 0x00);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x0f, 0x00);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x10, 0x00);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x10, 0x00);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x11, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x11, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x12, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x12, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x13, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x13, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x14, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x14, 0x05);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, 0x15, 0x07);
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, 0x15, 0x07);
-
-        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
 }
 
 static void ayaneo_led_mc_intensity(u8 group, u8 *color, u8 zones[])
@@ -394,9 +386,10 @@ static void ayaneo_led_mc_intensity(u8 group, u8 *color, u8 zones[])
 
 static void ayaneo_led_mc_off(void)
 {
-        ec_write_ram(AYANEO_LED_MC_ENABLE_ADDR, AYANEO_LED_MC_ENABLE_OFF);
-        ec_write_ram(AYANEO_LED_MC_ADDR_CLOSE_1, 0x01);
-        mdelay(AYANEO_LED_WRITE_DELAY_MS);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_ENABLE_ADDR, AYANEO_LED_CMD_ENABLE_OFF);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_ENABLE_ADDR, AYANEO_LED_CMD_ENABLE_OFF);
 
         // note: omit for aya flip when implemented, causes unexpected behavior
         ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
@@ -404,9 +397,43 @@ static void ayaneo_led_mc_off(void)
 
 static void ayaneo_led_mc_on(void)
 {
-        ec_write_ram(AYANEO_LED_MC_ENABLE_ADDR, AYANEO_LED_MC_ENABLE_ON);
-        ec_write_ram(AYANEO_LED_MC_ADDR_CLOSE_1, 0x01);
-        mdelay(AYANEO_LED_WRITE_DELAY_MS);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_ENABLE_ADDR, AYANEO_LED_CMD_ENABLE_ON);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_ENABLE_ADDR, AYANEO_LED_CMD_ENABLE_ON);
+
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_PATTERN_ADDR, AYANEO_LED_CMD_PATTERN_OFF);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_PATTERN_ADDR, AYANEO_LED_CMD_PATTERN_OFF);
+
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_FADE_ADDR, AYANEO_LED_CMD_FADE_OFF);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_FADE_ADDR, AYANEO_LED_CMD_FADE_OFF);
+
+        // Set static color animation
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_ANIM_1_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_ANIM_1_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_ANIM_2_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_ANIM_2_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_ANIM_3_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_ANIM_3_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_ANIM_4_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_ANIM_4_ADDR, AYANEO_LED_CMD_ANIM_STATIC);
+
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_WATCHDOG_ADDR, AYANEO_LED_CMD_WATCHDOG_ON);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_WATCHDOG_ADDR, AYANEO_LED_CMD_WATCHDOG_ON);
 
         // note: omit for aya flip when implemented, causes unexpected behavior
         ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
@@ -414,9 +441,10 @@ static void ayaneo_led_mc_on(void)
 
 static void ayaneo_led_mc_reset(void)
 {
-        ec_write_ram(AYANEO_LED_MC_ENABLE_ADDR, AYANEO_LED_MC_ENABLE_RESET);
-        ec_write_ram(AYANEO_LED_MC_ADDR_CLOSE_1, 0x01);
-        mdelay(AYANEO_LED_WRITE_DELAY_MS);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT,
+                AYANEO_LED_CMD_ENABLE_ADDR, AYANEO_LED_CMD_ENABLE_RESET);
+        ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT,
+                AYANEO_LED_CMD_ENABLE_ADDR, AYANEO_LED_CMD_ENABLE_RESET);
 
         // note: omit for aya flip when implemented, causes unexpected behavior
         ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
@@ -880,7 +908,7 @@ static void suspend_mode_register_attr(void)
                         break;
                 case air_plus:
                 case slide:
-                        // Not currently working; do not register
+                        ayaneo_led_mc_attrs[0] = &dev_attr_suspend_mode.attr;
                         break;
                 default:
                         break;
@@ -930,6 +958,9 @@ static int ayaneo_platform_resume(struct platform_device *pdev)
         ayaneo_led_mc_update_required++;
         write_unlock(&ayaneo_led_mc_update_lock);
 
+        // Allow the MCU to sync with the new state.
+        msleep(AYANEO_LED_SUSPEND_RESUME_DELAY_MS);
+
         ayaneo_led_mc_writer_thread = kthread_run(ayaneo_led_mc_writer,
                                                   NULL,
                                                   "ayaneo-platform led writer");
@@ -957,6 +988,10 @@ static int ayaneo_platform_suspend(struct platform_device *pdev, pm_message_t st
         default:
                 break;
         }
+
+        // Allow the MCU to sync with the new state.
+        msleep(AYANEO_LED_SUSPEND_RESUME_DELAY_MS);
+
         return 0;
 }
 
@@ -983,6 +1018,18 @@ static int ayaneo_platform_probe(struct platform_device *pdev)
         return ret;
 }
 
+static void ayaneo_platform_shutdown(struct platform_device *pdev)
+{
+        kthread_stop(ayaneo_led_mc_writer_thread);
+        ayaneo_led_mc_release_control();
+}
+
+static void ayaneo_platform_remove(struct platform_device *pdev)
+{
+        kthread_stop(ayaneo_led_mc_writer_thread);
+        ayaneo_led_mc_release_control();
+}
+
 static struct platform_driver ayaneo_platform_driver = {
         .driver = {
                 .name = "ayaneo-platform",
@@ -990,6 +1037,8 @@ static struct platform_driver ayaneo_platform_driver = {
         .probe = ayaneo_platform_probe,
         .resume = ayaneo_platform_resume,
         .suspend = ayaneo_platform_suspend,
+        .shutdown = ayaneo_platform_shutdown,
+        .remove_new = ayaneo_platform_remove,
 };
 
 static struct platform_device *ayaneo_platform_device;
