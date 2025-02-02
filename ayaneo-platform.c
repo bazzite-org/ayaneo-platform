@@ -246,7 +246,7 @@ static const struct dmi_system_id dmi_table[] = {
         {
                 .matches = {
                         DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
-                        DMI_EXACT_MATCH(DMI_BOARD_NAME, "AYANEO KUN"),
+                        DMI_MATCH(DMI_BOARD_NAME, "KUN"),
                 },
                 .driver_data = (void *)kun,
         },
