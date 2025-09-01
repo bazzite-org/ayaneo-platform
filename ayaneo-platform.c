@@ -172,15 +172,15 @@ enum ayaneo_model {
 static enum ayaneo_model model;
 
 enum AYANEO_LED_SUSPEND_MODE {
+        AYANEO_LED_SUSPEND_MODE_OFF,
         AYANEO_LED_SUSPEND_MODE_OEM,
-        AYANEO_LED_SUSPEND_MODE_KEEP,
-        AYANEO_LED_SUSPEND_MODE_OFF
+        AYANEO_LED_SUSPEND_MODE_KEEP
 };
 
 static const char * const AYANEO_LED_SUSPEND_MODE_TEXT[] = {
+        [AYANEO_LED_SUSPEND_MODE_OFF] = "off",
         [AYANEO_LED_SUSPEND_MODE_OEM] = "oem",
-        [AYANEO_LED_SUSPEND_MODE_KEEP] ="keep",
-        [AYANEO_LED_SUSPEND_MODE_OFF] = "off"
+        [AYANEO_LED_SUSPEND_MODE_KEEP] ="keep"
 };
 
 static enum AYANEO_LED_SUSPEND_MODE suspend_mode;
