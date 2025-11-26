@@ -244,6 +244,13 @@ static const struct dmi_system_id dmi_table[] = {
         },
         {
                 .matches = {
+                        DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "Mysten Labs, Inc."),
+                        DMI_EXACT_MATCH(DMI_BOARD_NAME, "SuiPlay0X1"),
+                },
+                .driver_data = (void *)ayaneo_2s,
+        },
+        {
+                .matches = {
                         DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AYANEO"),
                         DMI_EXACT_MATCH(DMI_BOARD_NAME, "GEEK"),
                 },
